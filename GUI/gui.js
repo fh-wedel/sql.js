@@ -4,10 +4,23 @@ var errorElm = document.getElementById('error');
 var commandsElm = document.getElementById('commands');
 var dbFileElm = document.getElementById('dbfile');
 var savedbElm = document.getElementById('savedb');
+var initElm = document.getElementById('init');
 
 // Start the worker in which sql.js will run
 var worker = new Worker("../js/worker.sql.js");
 worker.onerror = error;
+
+worker.onmessage = function() {
+    console.log("Database opened");
+    worker.onmessage = function(event){
+    console.log(event.data); // The result of the query
+    };
+    worker.postMessage({
+        id: 2,
+        action: 'exec',
+        sql: initElm.textContent
+    });
+};
 
 // Open a database
 worker.postMessage({action:'open'});
