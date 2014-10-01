@@ -2,19 +2,47 @@ var execBtn = document.getElementById("execute");
 var outputElm = document.getElementById('output');
 var errorElm = document.getElementById('error');
 var commandsElm = document.getElementById('commands');
-var dbFileElm = document.getElementById('dbfile');
-var savedbElm = document.getElementById('savedb');
+// var dbFileElm = document.getElementById('dbfile');
+// var savedbElm = document.getElementById('savedb');
 var initElm = document.getElementById('init');
+var imageElm = document.getElementById('image');
 
 // Start the worker in which sql.js will run
 var worker = new Worker("../js/worker.sql.js");
 worker.onerror = error;
 
+function _base64ToArrayBuffer(base64) {
+    var binary_string =  window.atob(base64);
+    var len = binary_string.length;
+    var bytes = new Uint8Array( len );
+    for (var i = 0; i < len; i++)        {
+        var ascii = binary_string.charCodeAt(i);
+        bytes[i] = ascii;
+    }
+    return bytes.buffer;
+}
+
 worker.onmessage = function() {
     console.log("Database opened");
+    tic();
     worker.onmessage = function(event){
-    console.log(event.data); // The result of the query
+      toc("Initialization");
+      console.log(event.data); // The result of the query
+      print("Loading data base done.");
     };
+    console.log("Initializing...");
+    print("Loading data base, please wait...");
+    if (imageElm) {
+       console.log("Loading image file");
+       image=_base64ToArrayBuffer(imageElm.textContent);
+       try {
+          worker.postMessage({id: 3, action:'open',buffer:image}, [image]);
+       }
+       catch(exception) {
+          worker.postMessage({id: 4, action:'open',buffer:image});
+       }
+    }
+    console.log("Interpreting initial SQL statements");
     worker.postMessage({
         id: 2,
         action: 'exec',
@@ -90,7 +118,7 @@ function toc(msg) {
 	console.log((msg||'toc') + ": " + dt + "ms");
 }
 
-// Add syntax highlihjting to the textarea
+// Add syntax highlighting to the textarea
 var editor = CodeMirror.fromTextArea(commandsElm, {
     mode: 'text/x-mysql',
     viewportMargin: Infinity,
@@ -102,6 +130,8 @@ var editor = CodeMirror.fromTextArea(commandsElm, {
 });
 
 // Load a db from a file
+
+/*
 dbFileElm.onchange = function() {
 	var f = dbFileElm.files[0];
 	var r = new FileReader();
@@ -122,8 +152,11 @@ dbFileElm.onchange = function() {
 	}
 	r.readAsArrayBuffer(f);
 }
+*/
+
 
 // Save the db to a file
+/*
 function savedb () {
 	worker.onmessage = function(event) {
 		toc("Exporting the database");
@@ -136,3 +169,4 @@ function savedb () {
 	worker.postMessage({action:'export'});
 }
 savedbElm.addEventListener("click", savedb, true);
+*/
