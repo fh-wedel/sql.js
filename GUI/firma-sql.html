@@ -209,7 +209,6 @@ select name, vorname, count(k_name) "Anzahl der Kinder"
 from personal left outer join kind using(pnr)
 group by pnr, name, vorname
 order by count(k_name) desc;
-
 </textarea>
     <button id="execute">Ausführen</button>
 <br>
@@ -218,7 +217,7 @@ order by count(k_name) desc;
 <label>Load an SQLite database file: <input type='file' id='dbfile' ></label>
 <button id='savedb'>Save the db</button>-->
 
-	<div id="error" class="error"></div>
+<div id="error" class="error"></div>
 <div id="result">Abfrage-Ergebnis:</result>
   <pre id="output"></pre>
 </main>
