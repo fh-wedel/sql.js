@@ -12,7 +12,7 @@ var worker = new Worker("../js/worker.sql.js");
 worker.onerror = error;
 
 function _base64ToArrayBuffer(base64) {
-    var binary_string =  window.atob(base64);
+    var binary_string =  window.atob(base64.replace(/\s/g, ''));
     var len = binary_string.length;
     var bytes = new Uint8Array( len );
     for (var i = 0; i < len; i++)        {
@@ -35,10 +35,14 @@ worker.onmessage = function() {
     if (imageElm) {
        console.log("Loading image file");
        image=_base64ToArrayBuffer(imageElm.textContent);
+       console.log("Imagesize:"+image.byteLength);
        try {
+          console.log("open image 3");
           worker.postMessage({id: 3, action:'open',buffer:image}, [image]);
        }
        catch(exception) {
+          console.log(exception)
+          console.log("open image 4");
           worker.postMessage({id: 4, action:'open',buffer:image});
        }
     }
